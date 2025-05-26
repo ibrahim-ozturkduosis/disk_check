@@ -1,4 +1,6 @@
+---
 - hosts: localhost
+  connection: local
   gather_facts: no
   tasks:
     - name: Cihaz listesini API'den çek
@@ -27,8 +29,8 @@
           assetStatusId: 1
           name: "{{ item }}"
           assetTypeId: 1
-        status_code: [200, 201]
-        validate_certs: no
+        status_code: 201
       loop: "{{ device_names }}"
+
 
 
