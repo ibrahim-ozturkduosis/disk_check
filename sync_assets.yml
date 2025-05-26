@@ -1,13 +1,13 @@
-- name: Dış API’den cihaz listesini çek ve varlık oluştur
+- name: Dış API’den cihaz listesini çek ve her cihaz için varlık oluştur
   hosts: localhost
   gather_facts: no
   connection: local
 
   vars:
-    api_url_devices: "{{ api_url_devices }}"
-    api_auth_header: "{{ api_auth_header }}"
-    api_url_create_asset: "{{ api_url_create_asset }}"
-    api_key_create_asset: "{{ api_key_create_asset }}"
+    api_url_devices: "https://213.153.197.248:8585/api/1.0/devices/"
+    api_auth_header: "Basic YWRtaW46QWExMjM0NTYu"
+    api_url_create_asset: "https://apiegitimlab.servicecore.app/api/v1/Asset/Create"
+    api_key_create_asset: "4y1PUHOHeGpVaERoo5saZD8ciqn94VpZjJK7ygOOCiE="
 
   tasks:
     - name: Cihaz listesini dış API'den çek
@@ -24,7 +24,7 @@
       set_fact:
         device_names: "{{ devices_response.json.Devices | map(attribute='name') | list }}"
 
-    - name: Her cihaz için varlık oluştur
+    - name: Her cihaz ismini POST ederek varlık oluştur
       uri:
         url: "{{ api_url_create_asset }}"
         method: POST
@@ -38,3 +38,5 @@
           assetTypeId: 1
         status_code: 200
       loop: "{{ device_names }}"
+      loop_control:
+        label: "{{ item }}"
