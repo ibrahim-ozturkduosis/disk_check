@@ -1,40 +1,41 @@
-- hosts: localhost
-  connection: local
+---
+- name: Dış API’den cihaz listesini çek ve varlık oluştur
+  hosts: localhost
   gather_facts: no
 
+  vars:
+    api_url_devices: "{{ api_url_devices }}"
+    api_auth_header: "{{ api_auth_header }}"
+    api_url_create_asset: "{{ api_url_create_asset }}"
+    api_key_create_asset: "{{ api_key_create_asset }}"
+
   tasks:
-    - name: Cihaz listesini API'den çek
+    - name: Cihaz listesini dış API'den çek
       uri:
-        url: https://213.153.197.248:8585/api/1.0/devices/
+        url: "{{ api_url_devices }}"
         method: GET
         headers:
-          Authorization: "Basic YWRtaW46QWExMjM0NTYu"
+          Authorization: "{{ api_auth_header }}"
         return_content: yes
         validate_certs: no
       register: devices_response
 
-    - name: API cevabını debug ile yazdır
-      debug:
-        var: devices_response.json
-
-    - name: Cihaz isimlerini liste olarak ayıkla
+    - name: Cihaz isimlerini ayıkla
       set_fact:
         device_names: "{{ devices_response.json.Devices | map(attribute='name') | list }}"
-      failed_when: device_names is not defined
 
     - name: Her cihaz için varlık oluştur
       uri:
-        url: https://apiegitimlab.servicecore.app/api/v1/Asset/Create
+        url: "{{ api_url_create_asset }}"
         method: POST
         headers:
-          ApiKey: "4y1PUHOHeGpVaERoo5saZD8ciqn94VpZjJK7ygOOCiE="
+          ApiKey: "{{ api_key_create_asset }}"
           Content-Type: "application/json"
         body_format: json
         body:
           assetStatusId: 1
           name: "{{ item }}"
           assetTypeId: 1
-        status_code: 200
+        status_code: 201
       loop: "{{ device_names }}"
-
 
