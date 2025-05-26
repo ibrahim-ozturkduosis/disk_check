@@ -1,4 +1,4 @@
-- hosts: localhost
+ - hosts: localhost
   gather_facts: no
   tasks:
     - name: Cihaz listesini API'den çek
@@ -30,4 +30,5 @@
         status_code: [200, 201]
         validate_certs: no
       loop: "{{ device_names }}"
+
 
