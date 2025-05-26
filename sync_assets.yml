@@ -1,0 +1,31 @@
+- hosts: localhost
+  gather_facts: no
+  tasks:
+    - name: Cihaz listesini API'den çek
+      uri:
+        url: https://213.153.197.248:8585/api/1.0/devices/
+        method: GET
+        headers:
+          Authorization: "Basic YWRtaW46QWExMjM0NTYu"
+        return_content: yes
+        validate_certs: no
+      register: devices_response
+
+    - name: Cihaz isimlerini liste olarak ayıkla
+      set_fact:
+        device_names: "{{ devices_response.json.devices | map(attribute='name') | list }}"
+
+    - name: Her cihaz için varlık oluştur
+      uri:
+        url: https://apiegitimlab.servicecore.app/api/v1/Asset/Create
+        method: POST
+        headers:
+          ApiKey: "4y1PUHOHeGpVaERoo5saZD8ciqn94VpZjJK7ygOOCiE="
+          Content-Type: "application/json"
+        body_format: json
+        body:
+          assetStatusId: 1
+          name: "{{ item }}"
+          assetTypeId: 1
+        status_code: 201
+      loop: "{{ device_names }}"
