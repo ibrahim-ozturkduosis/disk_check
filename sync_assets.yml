@@ -1,7 +1,7 @@
----
 - name: Dış API’den cihaz listesini çek ve varlık oluştur
   hosts: localhost
   gather_facts: no
+  connection: local
 
   vars:
     api_url_devices: "{{ api_url_devices }}"
@@ -38,4 +38,3 @@
           assetTypeId: 1
         status_code: 201
       loop: "{{ device_names }}"
-
