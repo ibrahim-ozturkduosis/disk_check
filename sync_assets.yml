@@ -19,8 +19,7 @@
 
     - name: Cihaz isimlerini liste olarak ayıkla
       set_fact:
-        # Burada devices_response.json.devices doğruysa, değilse düzelt:
-        device_names: "{{ devices_response.json.devices | map(attribute='name') | list }}"
+        device_names: "{{ devices_response.json.Devices | map(attribute='name') | list }}"
       failed_when: device_names is not defined
 
     - name: Her cihaz için varlık oluştur
@@ -37,6 +36,5 @@
           assetTypeId: 1
         status_code: 201
       loop: "{{ device_names }}"
-
 
 
