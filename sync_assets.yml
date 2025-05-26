@@ -34,7 +34,7 @@
           assetStatusId: 1
           name: "{{ item }}"
           assetTypeId: 1
-        status_code: 201
+        status_code: 200
       loop: "{{ device_names }}"
 
 
