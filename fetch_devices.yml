@@ -23,9 +23,8 @@
       set_fact:
         device_list: "{{ devices_response.json.Devices }}"
 
-    - name: Show device list for debug (opsiyonel)
+    - name: Show device list for debug (optional)
       debug:
         var: device_list
 
-  # OUTPUT: device_list değişkeni playbook sonucu olarak AWX'te alınabilir.
 
