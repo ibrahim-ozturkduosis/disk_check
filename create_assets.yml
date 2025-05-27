@@ -1,0 +1,34 @@
+---
+- name: Create assets for devices
+  hosts: localhost
+  gather_facts: no
+  connection: local
+
+  vars:
+    api_url_create_asset: "https://apiegitimlab.servicecore.app/api/v1/Asset/Create"
+    api_key_create_asset: "4y1PUHOHeGpVaERoo5saZD8ciqn94VpZjJK7ygOOCiE="
+
+  # input olarak device_list bekliyoruz, workflow'dan geçecek
+  vars_prompt:      # Alternatif: vars_prompt veya extra_vars ile input alınabilir.
+    - name: "device_list"
+      prompt: "Device list from previous playbook"
+      private: no
+      default: []
+
+  tasks:
+    - name: Create asset for each device
+      uri:
+        url: "{{ api_url_create_asset }}"
+        method: POST
+        headers:
+          ApiKey: "{{ api_key_create_asset }}"
+          Content-Type: "application/json"
+        body_format: json
+        body:
+          assetStatusId: 1
+          name: "{{ item.name }}"    # item bir cihaz objesi, içindeki name alanı
+          assetTypeId: 1
+        status_code: 200
+      loop: "{{ device_list }}"
+      loop_control:
+        label: "{{ item.name }}"
