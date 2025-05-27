@@ -1,4 +1,5 @@
-- name: Dış API’den cihaz listesini çek ve her cihaz için varlık oluştur
+---
+- name: Fetch devices from external API
   hosts: localhost
   gather_facts: no
   connection: local
@@ -6,11 +7,9 @@
   vars:
     api_url_devices: "https://213.153.197.248:8585/api/1.0/devices/"
     api_auth_header: "Basic YWRtaW46QWExMjM0NTYu"
-    api_url_create_asset: "https://apiegitimlab.servicecore.app/api/v1/Asset/Create"
-    api_key_create_asset: "4y1PUHOHeGpVaERoo5saZD8ciqn94VpZjJK7ygOOCiE="
 
   tasks:
-    - name: Cihaz listesini dış API'den çek
+    - name: Get device list from external API
       uri:
         url: "{{ api_url_devices }}"
         method: GET
@@ -20,23 +19,13 @@
         validate_certs: no
       register: devices_response
 
-    - name: Cihaz isimlerini ayıkla
+    - name: Set device list as fact (output)
       set_fact:
-        device_names: "{{ devices_response.json.Devices | map(attribute='name') | list }}"
+        device_list: "{{ devices_response.json.Devices }}"
 
-    - name: Her cihaz ismini POST ederek varlık oluştur
-      uri:
-        url: "{{ api_url_create_asset }}"
-        method: POST
-        headers:
-          ApiKey: "{{ api_key_create_asset }}"
-          Content-Type: "application/json"
-        body_format: json
-        body:
-          assetStatusId: 1
-          name: "{{ item }}"
-          assetTypeId: 1
-        status_code: 200
-      loop: "{{ device_names }}"
-      loop_control:
-        label: "{{ item }}"
+    - name: Show device list for debug (opsiyonel)
+      debug:
+        var: device_list
+
+  # OUTPUT: device_list değişkeni playbook sonucu olarak AWX'te alınabilir.
+
