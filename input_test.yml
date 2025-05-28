@@ -1,17 +1,22 @@
-- name: Dışarıdan alınan input ile basit test
+- name: AWX Variables ile gelen değerleri kullan
   hosts: localhost
   gather_facts: no
   connection: local
 
-  vars:
-    custom_input: "{{ custom_input }}"  # Dışarıdan alınan input burada
-
   tasks:
-    - name: Girilen değeri göster
+    - name: Gelen test1 değerini göster
       debug:
-        msg: "Flow’un çıktısı: {{ custom_input }}"
+        msg: "test1: {{ test1 }}"
 
-    - name: (İsteğe bağlı) API'ye bu değeri gönder
+    - name: Gelen test2 değerini göster
+      debug:
+        msg: "test2: {{ test2 }}"
+
+    - name: Gelen test3 değerini göster
+      debug:
+        msg: "test3: {{ test3 }}"
+
+    - name: (İsteğe bağlı) Tüm input'ları bir API'ye gönder
       uri:
         url: "https://postman-echo.com/post"
         method: POST
@@ -19,7 +24,9 @@
           Content-Type: "application/json"
         body_format: json
         body:
-          input_value: "{{ custom_input }}"
+          input_1: "{{ test1 }}"
+          input_2: "{{ test2 }}"
+          input_3: "{{ test3 }}"
         status_code: 200
       register: result
 
