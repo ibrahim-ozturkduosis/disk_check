@@ -8,15 +8,11 @@
     api_key_create_asset: "4y1PUHOHeGpVaERoo5saZD8ciqn94VpZjJK7ygOOCiE="
 
   tasks:
-    - name: Convert device_list string to list (if needed)
-      set_fact:
-        device_list_parsed: "{{ device_list | from_json }}"
-      when: device_list is string
-
-    - name: Use device_list as is if already list
-      set_fact:
-        device_list_parsed: "{{ device_list }}"
-      when: device_list is not string
+    - name: Debug device_list type and content
+      debug:
+        msg:
+          type: "{{ device_list | type_debug }}"
+          content: "{{ device_list }}"
 
     - name: Create asset for each device
       uri:
@@ -31,8 +27,9 @@
           name: "{{ item.name }}"
           assetTypeId: 1
         status_code: 200
-      loop: "{{ device_list_parsed }}"
+      loop: "{{ device_list }}"
       loop_control:
         label: "{{ item.name }}"
+
 
 
