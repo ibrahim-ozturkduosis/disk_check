@@ -3,9 +3,6 @@
   gather_facts: no
   connection: local
 
-  vars:
-    custom_input: "{{ custom_input }}"
-
   tasks:
     - name: Girilen değeri göster
       debug:
