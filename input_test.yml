@@ -3,6 +3,9 @@
   gather_facts: no
   connection: local
 
+  vars:
+    custom_input: "{{ custom_input }}"  # Dışarıdan alınan input burada
+
   tasks:
     - name: Girilen değeri göster
       debug:
@@ -10,7 +13,7 @@
 
     - name: (İsteğe bağlı) API'ye bu değeri gönder
       uri:
-        url: "https://httpbin.org/post"
+        url: "https://postman-echo.com/post"
         method: POST
         headers:
           Content-Type: "application/json"
@@ -23,3 +26,4 @@
     - name: API yanıtını göster
       debug:
         var: result.json
+
