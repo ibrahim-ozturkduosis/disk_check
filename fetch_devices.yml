@@ -3,13 +3,6 @@
   gather_facts: no
   connection: local
 
-  vars:
-    d42_host: "{{ d42_host }}"
-    d42_port: "{{ d42_port }}"
-    d42_protocol: "https"
-    d42_username: "{{ d42_username }}"
-    d42_password: "{{ d42_password }}"
-
   tasks:
     - name: Authorization token oluştur
       set_fact:
@@ -17,7 +10,7 @@
 
     - name: Cihaz listesini dış API'den çek
       uri:
-        url: "{{ d42_protocol }}://{{ d42_host }}:{{ d42_port }}/api/1.0/devices/"
+        url: "https://{{ d42_host }}:{{ d42_port }}/api/1.0/devices/"
         method: GET
         headers:
           Authorization: "{{ d42_auth_header }}"
@@ -33,5 +26,6 @@
       set_stats:
         data:
           shared_device_names: "{{ device_names }}"
+
 
 
