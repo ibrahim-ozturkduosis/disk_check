@@ -1,29 +1,40 @@
-- name: Fetch devices from external API
+- name: Dış API'den cihazları çek ve kaydet
   hosts: localhost
   gather_facts: no
   connection: local
 
   vars:
-    api_url_devices: "https://213.153.197.248:8585/api/1.0/devices/"
-    api_auth_header: "Basic YWRtaW46QWExMjM0NTYu"
+    d42_host: "213.153.197.248"
+    d42_port: "8585"
+    d42_protocol: "https"
+    d42_username: "admin"
+    d42_password: "Aa123456."
+
+    output_file: "/tmp/device_list.json"
 
   tasks:
-    - name: Get device list from external API
+    - name: Authorization token oluştur
+      set_fact:
+        d42_auth_header: "Basic {{ (d42_username + ':' + d42_password) | b64encode }}"
+
+    - name: Cihaz listesini dış API'den çek
       uri:
-        url: "{{ api_url_devices }}"
+        url: "{{ d42_protocol }}://{{ d42_host }}:{{ d42_port }}/api/1.0/devices/"
         method: GET
         headers:
-          Authorization: "{{ api_auth_header }}"
+          Authorization: "{{ d42_auth_header }}"
         return_content: yes
         validate_certs: no
       register: devices_response
 
-    - name: Set device list as fact (output)
+    - name: Cihaz isimlerini ayıkla
       set_fact:
-        device_list: "{{ devices_response.json.Devices }}"
+        device_names: "{{ devices_response.json.Devices | map(attribute='name') | list }}"
 
-    - name: Show device list for debug (optional)
-      debug:
-        var: device_list
+    - name: Cihaz listesini dosyaya yaz
+      copy:
+        content: "{{ device_names | to_json }}"
+        dest: "{{ output_file }}"
+
 
 
