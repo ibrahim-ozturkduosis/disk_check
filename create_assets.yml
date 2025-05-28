@@ -1,22 +1,18 @@
-- name: Dosyadan cihazları oku ve ServiceCore’a gönder
+- name: Workflow output'tan cihazları al ve ServiceCore’a gönder
   hosts: localhost
   gather_facts: no
   connection: local
 
   vars:
-    servicecore_api_url: "https://apiegitimlab.servicecore.app/api/v1/Asset/Create"
-    servicecore_api_key: "4y1PUHOHeGpVaERoo5saZD8ciqn94VpZjJK7ygOOCiE="
-    input_file: "/tmp/device_list.json"
+    servicecore_api_url: "{{ servicecore_api_url }}"
+    servicecore_api_key: "{{ servicecore_api_key }}"
+    asset_status_id: "{{ asset_status_id }}"
+    asset_type_id: "{{ asset_type_id }}"
 
   tasks:
-    - name: Cihaz listesi dosyasını oku
-      slurp:
-        src: "{{ input_file }}"
-      register: file_data
-
-    - name: JSON olarak ayrıştır
+    - name: Fetch Devices çıktısından cihazları al
       set_fact:
-        device_names: "{{ file_data['content'] | b64decode | from_json }}"
+        device_names: "{{ hostvars['localhost']['shared_device_names'] }}"
 
     - name: Her cihazı ServiceCore'a gönder
       uri:
@@ -27,9 +23,9 @@
           Content-Type: "application/json"
         body_format: json
         body:
-          assetStatusId: 1
+          assetStatusId: "{{ asset_status_id }}"
           name: "{{ item }}"
-          assetTypeId: 1
+          assetTypeId: "{{ asset_type_id }}"
         status_code: 200
       loop: "{{ device_names }}"
       loop_control:
