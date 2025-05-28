@@ -12,7 +12,7 @@
   tasks:
     - name: Fetch Devices çıktısından cihazları al
       set_fact:
-        device_names: "{{ hostvars['localhost']['shared_device_names'] }}"
+        devices: "{{ hostvars['localhost']['shared_device_names'] }}"
 
     - name: Her cihazı ServiceCore'a gönder
       uri:
@@ -24,13 +24,11 @@
         body_format: json
         body:
           assetStatusId: "{{ asset_status_id }}"
-          name: "{{ item }}"
+          name: "{{ item.name }}"
           assetTypeId: "{{ asset_type_id }}"
+          ipAddress: "{{ item.ipAddress }}"
+          description: "{{ item.description }}"
         status_code: 200
-      loop: "{{ device_names }}"
+      loop: "{{ devices }}"
       loop_control:
-        label: "{{ item }}"
-
-
-
-
+        label: "{{ item.name }}"
