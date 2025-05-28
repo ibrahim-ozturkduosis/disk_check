@@ -1,16 +1,14 @@
-- name: Dış API'den cihazları çek ve kaydet
+- name: Dış API'den cihazları çek ve paylaş
   hosts: localhost
   gather_facts: no
   connection: local
 
   vars:
-    d42_host: "213.153.197.248"
-    d42_port: "8585"
+    d42_host: "{{ d42_host }}"
+    d42_port: "{{ d42_port }}"
     d42_protocol: "https"
-    d42_username: "admin"
-    d42_password: "Aa123456."
-
-    output_file: "/tmp/device_list.json"
+    d42_username: "{{ d42_username }}"
+    d42_password: "{{ d42_password }}"
 
   tasks:
     - name: Authorization token oluştur
@@ -31,10 +29,9 @@
       set_fact:
         device_names: "{{ devices_response.json.Devices | map(attribute='name') | list }}"
 
-    - name: Cihaz listesini dosyaya yaz
-      copy:
-        content: "{{ device_names | to_json }}"
-        dest: "{{ output_file }}"
-
+    - name: Workflow output olarak cihazları paylaş
+      set_stats:
+        data:
+          shared_device_names: "{{ device_names }}"
 
 
