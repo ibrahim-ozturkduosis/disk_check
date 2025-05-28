@@ -1,0 +1,28 @@
+- name: Dışarıdan alınan input ile basit test
+  hosts: localhost
+  gather_facts: no
+  connection: local
+
+  vars:
+    custom_input: "{{ custom_input }}"
+
+  tasks:
+    - name: Girilen değeri göster
+      debug:
+        msg: "Flow’un çıktısı: {{ custom_input }}"
+
+    - name: (İsteğe bağlı) API'ye bu değeri gönder
+      uri:
+        url: "https://httpbin.org/post"
+        method: POST
+        headers:
+          Content-Type: "application/json"
+        body_format: json
+        body:
+          input_value: "{{ custom_input }}"
+        status_code: 200
+      register: result
+
+    - name: API yanıtını göster
+      debug:
+        var: result.json
