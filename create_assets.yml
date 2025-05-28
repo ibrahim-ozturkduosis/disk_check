@@ -3,12 +3,6 @@
   gather_facts: no
   connection: local
 
-  vars:
-    servicecore_api_url: "{{ servicecore_api_url }}"
-    servicecore_api_key: "{{ servicecore_api_key }}"
-    asset_status_id: "{{ asset_status_id }}"
-    asset_type_id: "{{ asset_type_id }}"
-
   tasks:
     - name: Fetch Devices çıktısından cihazları al
       set_fact:
@@ -30,3 +24,4 @@
       loop: "{{ device_names }}"
       loop_control:
         label: "{{ item }}"
+
